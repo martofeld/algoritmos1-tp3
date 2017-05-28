@@ -81,16 +81,19 @@ class Shell(cmd.Cmd):
 		self.executor.delete_track(int(params))
 
 	def do_markadd(self, params):
-		#TODO
-		raise NotImplementedError("Command markadd is not yet implemented")
+		if not self.validate_params(params, int):
+			return
+		self.executor.add_mark(int(params))
 
 	def do_markaddnext(self, params):
-		#TODO
-		raise NotImplementedError("Command markaddnext is not yet implemented")
+		if not self.validate_params(params, int):
+			return
+		self.executor.add_mark(int(params), 1)
 
 	def do_markaddprev(self, params):
-		#TODO
-		raise NotImplementedError("Command markaddprev is not yet implemented")
+		if not self.validate_params(params, int):
+			return
+		self.executor.add_mark(int(params), -1)
 
 	def do_trackon(self, params):
 		if not self.validate_params(params, int):

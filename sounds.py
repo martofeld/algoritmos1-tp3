@@ -36,7 +36,9 @@ class SongFile():
 		for i,sound in enumerate(self.notes):
 			print(i,":", sound)
 
-		print("|".join(self.tempos))
+		for tempo in self.tempos:
+			print("{}|".format(tempo), end="")
+		print("")
 		for channel in range(self.channels):
 			for note in self.tracks[channel]:
 				print(" {} |".format(note), end="")
@@ -71,7 +73,18 @@ class SongFile():
 
 	def toggle_track(self, turn_on, track_number):
 		current_value = "#" if turn_on else "·"
-		print(current_value)
-		print(track_number)
-		print(self.position)
 		self.tracks[track_number].replace(current_value, self.position)
+
+	def add_mark(self, position, tempo):
+		insert_position = self.position + position
+
+		if insert_position < 0:
+			insert_position = 0
+
+		if position == -1:
+			self.position += 1
+			insert_position += 1
+
+		self.tempos.insert(tempo, insert_position)
+		for channel in range(self.channels):
+			self.tracks[channel].insert("·", insert_position)

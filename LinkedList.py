@@ -32,7 +32,7 @@ class LinkedList():
 			return
 
 		previous = self.first
-		for i in range(1, index + 1):
+		for i in range(1, index):
 			previous = previous.next
 			
 		new.next = previous.next

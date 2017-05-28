@@ -30,3 +30,7 @@ class CommandExecutor():
 	def toggle_track(self, turn_on, track_number):
 		self.song_file.toggle_track(turn_on, track_number)
 		self.song_file.show()
+
+	def add_mark(self, tempo, position = 0):
+		self.song_file.add_mark(position, tempo * 0.1)
+		self.song_file.show()

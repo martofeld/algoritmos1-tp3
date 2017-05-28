@@ -15,7 +15,7 @@ class FileManager():
 		channels = 0
 		sounds = []
 		tracks = []
-		tempos = []
+		tempos = LinkedList()
 		current_tempo = 0
 		with self.open_file() as song_file:
 			for line in song_file:
@@ -32,7 +32,7 @@ class FileManager():
 				elif key == "t":
 					current_tempo = value
 				elif key == "n":
-					tempos.append(current_tempo)
+					tempos.push(current_tempo)
 					for i,char in enumerate(value):
 						tracks[i].push(char)
 			return SongFile(channels, sounds, tracks, tempos)
