@@ -1,5 +1,6 @@
 from soundPlayer import SoundFactory
 from sounds import Song, SongFile
+from LinkedList import LinkedList
 import re as regularExpression
 
 class FileManager():
@@ -25,7 +26,7 @@ class FileManager():
 				if key == "c":
 					channels = int(value)
 					for channel in range(channels):
-						tracks.append([])
+						tracks.append(LinkedList())
 				elif key == "s":
 					sounds.append(value)
 				elif key == "t":
@@ -33,7 +34,7 @@ class FileManager():
 				elif key == "n":
 					tempos.append(current_tempo)
 					for i,char in enumerate(value):
-						tracks[i].append(char)
+						tracks[i].push(char)
 			return SongFile(channels, sounds, tracks, tempos)
 
 class FileReader():

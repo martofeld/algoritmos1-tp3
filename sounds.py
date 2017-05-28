@@ -59,9 +59,9 @@ class SongFile():
 		self.notes.append(track)
 		self.channels += 1
 		marks = len(self.tracks[0])
-		track = []
+		track = LinkedList()
 		for i in range(marks):
-			track.append(".")
+			track.push("·")
 		self.tracks.append(track)
 
 	def delete_track(self, track_number):
@@ -70,4 +70,8 @@ class SongFile():
 		self.tracks.pop(track_number)
 
 	def toggle_track(self, turn_on, track_number):
-		self.tracks[track_number][self.position] = "#" if turn_on else "·"
+		current_value = "#" if turn_on else "·"
+		print(current_value)
+		print(track_number)
+		print(self.position)
+		self.tracks[track_number].replace(current_value, self.position)

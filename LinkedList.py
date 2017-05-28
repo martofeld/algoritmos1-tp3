@@ -18,6 +18,40 @@ class LinkedList():
 		self.last.next = new
 		self.last = new
 
+	def insert(self, value, index = None):
+		if index == None or index == self.len:
+			push(value)
+		if index < 0:
+			raise IndexError
+
+		new = _Node(value)
+		self.len += 1
+		if index == 0:
+			new.next = self.first
+			self.first = new
+			return
+
+		previous = self.first
+		for i in range(1, index + 1):
+			previous = previous.next
+			
+		new.next = previous.next
+		previous.next = new
+
+	def replace(self, new_value, index):
+		if index < 0 or index > self.len:
+			raise IndexError
+
+		if index == 0:
+			self.first.value = new_value
+			return
+
+		previous = self.first
+		for i in range(1, index + 1):
+			previous = previous.next
+
+		previous.value = new_value
+
 	def pop(self, index = None):
 		if i < 0 or i > self.len:
 			raise IndexError("Invalid index for list")
@@ -38,10 +72,13 @@ class LinkedList():
 			previous = current
 			current = current.next
 		previous.next = current.next
-		return current.dato
+		return current.value
 
 	def __iter__(self):
 		return _LinkedListIterator(self.first)
+
+	def __len__(self):
+		return self.len
 
 
 class _LinkedListIterator():
@@ -51,9 +88,10 @@ class _LinkedListIterator():
 		self.previous = Stack()
 
 	def next(self):
-		self.previous.push(self.current)
-		if not self.current.next:
+		if not self.current:
 			raise StopIteration
+		
+		self.previous.push(self.current)
 
 		return_value = self.current.value
 		self.current = self.current.next
