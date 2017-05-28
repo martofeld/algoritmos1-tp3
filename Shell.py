@@ -93,12 +93,14 @@ class Shell(cmd.Cmd):
 		raise NotImplementedError("Command markaddprev is not yet implemented")
 
 	def do_trackon(self, params):
-		#TODO
-		raise NotImplementedError("Command trackon is not yet implemented")
+		if not self.validate_params(params, int):
+			return
+		self.executor.toggle_track(True, int(params))
 
 	def do_trackoff(self, params):
-		#TODO
-		raise NotImplementedError("Command trackoff is not yet implemented")
+		if not self.validate_params(params, int):
+			return
+		self.executor.toggle_track(False, int(params))
 
 	def do_play(self, params):
 		#TODO

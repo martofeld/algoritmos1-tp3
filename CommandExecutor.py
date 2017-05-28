@@ -26,3 +26,7 @@ class CommandExecutor():
 	def delete_track(self, track_number):
 		self.song_file.delete_track(track_number)
 		self.song_file.show()
+
+	def toggle_track(self, turn_on, track_number):
+		self.song_file.toggle_track(turn_on, track_number)
+		self.song_file.show()

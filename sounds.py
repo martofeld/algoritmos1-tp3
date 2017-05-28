@@ -41,7 +41,7 @@ class SongFile():
 			for note in self.tracks[channel]:
 				print(" {} |".format(note), end="")
 
-			print("  <-- ",self.notes[channel])
+			print("  <-- ", self.notes[channel])
 		
 		for position in range(self.position + 1):
 			if position == self.position:
@@ -69,3 +69,5 @@ class SongFile():
 		self.channels -= 1
 		self.tracks.pop(track_number)
 
+	def toggle_track(self, turn_on, track_number):
+		self.tracks[track_number][self.position] = "#" if turn_on else "·"
