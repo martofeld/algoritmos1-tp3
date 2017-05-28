@@ -38,11 +38,10 @@ class SongFile():
 
 		print("|".join(self.tempos))
 		for channel in range(self.channels):
-			for position,note in enumerate(self.tracks[channel]):
-				end = ""
-				if position == (len(self.tracks[channel]) - 1):
-					end = "\n"
-				print(" {} |".format(note), end=end)
+			for note in self.tracks[channel]:
+				print(" {} |".format(note), end="")
+
+			print("  <-- ",self.notes[channel])
 		
 		for position in range(self.position + 1):
 			if position == self.position:
@@ -55,4 +54,18 @@ class SongFile():
 
 	def back(self, steps = 1):
 		self.position -= steps
+
+	def add_track(self, track):
+		self.notes.append(track)
+		self.channels += 1
+		marks = len(self.tracks[0])
+		track = []
+		for i in range(marks):
+			track.append(".")
+		self.tracks.append(track)
+
+	def delete_track(self, track_number):
+		self.notes.pop(track_number)
+		self.channels -= 1
+		self.tracks.pop(track_number)
 

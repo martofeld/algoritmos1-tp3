@@ -18,3 +18,11 @@ class CommandExecutor():
 	def back(self, steps = 1):
 		self.song_file.back(steps)
 		self.song_file.show()
+
+	def add_track(self, track):
+		self.song_file.add_track(track)
+		self.song_file.show()
+
+	def delete_track(self, track_number):
+		self.song_file.delete_track(track_number)
+		self.song_file.show()
