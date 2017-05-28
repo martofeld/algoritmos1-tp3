@@ -1,7 +1,3 @@
-from FileManager import FileReader
+from Shell import Shell
 
-fileReader = FileReader("ejemplo2.plp")
-song = fileReader.file_to_song()
-
-song.play()
-print(song)
+Shell().cmdloop()
