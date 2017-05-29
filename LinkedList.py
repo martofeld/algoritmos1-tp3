@@ -19,9 +19,10 @@ class LinkedList():
 		self.last = new
 
 	def insert(self, value, index = None):
-		if index == None or index == self.len:
+		if index is None or index == self.len:
 			push(value)
-		if index < 0:
+
+		if index < 0 or index > self.len:
 			raise IndexError
 
 		new = _Node(value)
@@ -53,32 +54,72 @@ class LinkedList():
 		previous.value = new_value
 
 	def pop(self, index = None):
-		if i < 0 or i > self.len:
+		if index is None:
+			index = self.len - 1
+
+		if index < 0 or index > self.len:
 			raise IndexError("Invalid index for list")
 
 		self.len -= 1
-
-		if index == None:
-			index = self.len
 
 		if index == 0:
 			return_value = self.first.value
 			self.first = self.first.next
 			return return_value
 
-		previous = None
-		current = self.first
-		for i in range(index):
+		previous = self.first
+		current = self.first.next
+		for i in range(1, index):
 			previous = current
 			current = current.next
 		previous.next = current.next
 		return current.value
+
+	def get(self, index = None):
+		if index is None:
+			index = self.len -1
+
+		if index < 0 or index > self.len:
+			raise IndexError("Invalid index for list")
+
+		current = self.first
+		for i in range(index):
+			current = current.next
+		
+		return current.value
+
+	def get_range(self, start = None, end = None):
+		if start is None:
+			start = 0
+		if end is None:
+			end = self.len
+
+		if start < 0 or end > self.len:
+			raise IndexError
+
+		current = self.first
+		for i in range(start):
+			current = current.next
+
+		selected_range = LinkedList()
+		for i in range(end - start):
+			selected_range.push(current.value)
+			current = current.next
+
+		return selected_range
 
 	def __iter__(self):
 		return _LinkedListIterator(self.first)
 
 	def __len__(self):
 		return self.len
+
+	def __str__(self):
+		str_list = []
+		for node in self:
+			str_list.append(node)
+
+		return str(str_list)
 
 
 class _LinkedListIterator():
@@ -117,4 +158,7 @@ class _Node():
 	def __init__(self, value):
 		self.value = value
 		self.next = None
+
+	def __str__(self):
+		return str(self.value)
 		
