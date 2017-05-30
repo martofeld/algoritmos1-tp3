@@ -52,10 +52,12 @@ class SongFile():
 				print("    ", end="")
 
 	def step(self, steps = 1):
-		self.position += steps
+		if self.position < len(self) - 1:
+			self.position += steps
 
 	def back(self, steps = 1):
-		self.position -= steps
+		if self.position > 0:
+			self.position -= steps
 
 	def add_track(self, track):
 		self.notes.append(track)
@@ -88,3 +90,6 @@ class SongFile():
 		self.tempos.insert(tempo, insert_position)
 		for channel in range(self.channels):
 			self.tracks[channel].insert("·", insert_position)
+
+	def __len__(self):
+		return len(self.tracks[0])
