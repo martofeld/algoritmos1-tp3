@@ -34,3 +34,7 @@ class CommandExecutor():
 	def add_mark(self, tempo, position = 0):
 		self.song_file.add_mark(position, tempo * 0.1)
 		self.song_file.show()
+
+	def play_marks(self, start = None, end = None):
+		song = self.song_file.get_song(start, end)
+		song.play()

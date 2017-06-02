@@ -30,7 +30,7 @@ class FileManager():
 				elif key == "s":
 					sounds.append(value)
 				elif key == "t":
-					current_tempo = value
+					current_tempo = float(value)
 				elif key == "n":
 					tempos.push(current_tempo)
 					for i,char in enumerate(value):
