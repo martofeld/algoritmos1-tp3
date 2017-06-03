@@ -1,22 +1,23 @@
 class Stack():
-	"""docstring for Stack"""
-	def __init__(self):
-		self.container = []
+    """docstring for Stack"""
 
-	def pop(self):
-		if self.is_empty():
-			return None
-			
-		return self.container.pop()
+    def __init__(self):
+        self.container = []
 
-	def push(self, value):
-		self.container.append(value)
+    def pop(self):
+        if self.is_empty():
+            return None
 
-	def is_empty(self):
-		return len(self.container) == 0
+        return self.container.pop()
 
-	def peek(self):
-		if self.is_empty():
-			return None
+    def push(self, value):
+        self.container.append(value)
 
-		return self.container[-1]
+    def is_empty(self):
+        return len(self.container) == 0
+
+    def peek(self):
+        if self.is_empty():
+            return None
+
+        return self.container[-1]

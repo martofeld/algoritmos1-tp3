@@ -43,10 +43,10 @@ class Sound(object):
         return bytes(bytearray(samples)) + b'\x80' * SPACING
 
     def __str__(self):
-        return "Frec {}, F: {}".format(self.frequency, self.wave_function)
+        return "Frec {}, F: {}".format(self.frequency, str(self.function).split("_")[1])
 
     def __dir__(self):
-        return "Frec {}, F: {}".format(self.frequency, self.wave_function)
+        return "Frec {}, F: {}".format(self.frequency, str(self.function).split("_")[1])
 
 
 class SoundFactory(object):
