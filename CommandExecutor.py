@@ -35,3 +35,11 @@ class CommandExecutor():
     def add_mark(self, tempo, position=0):
         self.song_file.add_mark(position, round(tempo * 0.1, 1))
         self.song_file.show()
+
+    def play_marks(self, start = None, end = None):
+        self.song_file.play_song(start, end)
+        self.song_file.show()
+
+    def play_seconds(self, seconds):
+        self.song_file.play_song_with_length(seconds)
+        self.song_file.show()

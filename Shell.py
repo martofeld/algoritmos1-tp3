@@ -106,20 +106,20 @@ class Shell(cmd.Cmd):
         self.executor.toggle_track(False, int(params))
 
     def do_play(self, params):
-        # TODO
-        raise NotImplementedError("Command play is not yet implemented")
+        self.executor.play_marks(end=1)
 
     def do_playall(self, params):
-        # TODO
-        raise NotImplementedError("Command playall is not yet implemented")
+        self.executor.play_marks(start=0)
 
     def do_playmarks(self, params):
-        # TODO
-        raise NotImplementedError("Command playmarks is not yet implemented")
+        if not self.validate_params(params, int):
+            return;
+        self.executor.play_marks(end=int(params))
 
     def do_playseconds(self, params):
-        # TODO
-        raise NotImplementedError("Command playseconds is not yet implemented")
+        if not self.validate_params(params, int):
+            return;
+        self.executor.play_seconds(int(params))
 
     def validate_params(self, params, expected_type=str):
         if not params:
