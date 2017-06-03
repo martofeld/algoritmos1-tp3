@@ -44,10 +44,10 @@ class Sound(object):
         return bytes(bytearray(samples)) + b'\x80' * SPACING
 
     def __str__(self):
-        return "Frec {}, F: {}".format(self.frequency, self.wave_function)
+        return "Frec {}, F: {}".format(self.frequency, str(self.function).split("_")[1])
 
     def __dir__(self):
-        return "Frec {}, F: {}".format(self.frequency, self.wave_function)
+        return "Frec {}, F: {}".format(self.frequency, str(self.function).split("_")[1])
 
 
 class SoundFactory(object):
@@ -95,19 +95,6 @@ class SoundFactory(object):
     def get_silence_sound(frequency, volume):
         return Sound(frequency,
                      lambda t: 0)
-
-    @staticmethod
-    def get_sound(str_sound):
-        split_sound = str_sound.split("|")
-        function,frequency,volume = split_sound[0].lower(),float(split_sound[1]),float(split_sound[2])
-        if function == "sin":
-            return SoundFactory.get_sine_sound(frequency, volume)
-        if function == "tria":
-            return SoundFactory.get_triangular_sound(frequency, volume)
-        if function.startswith("sq") and function.isalnum():
-            duty_cycle = regularExpression.search("[0-9]+", function).group(0)
-            return SoundFactory.get_square_sound(frequency, volume, int(duty_cycle) * 0.1)
-        raise ValueError("Function {} is not recognized".format(function))
 
 
 class SoundPlayer(object):

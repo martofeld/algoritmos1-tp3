@@ -1,129 +1,148 @@
 from LinkedList import LinkedList
 from soundPlayer import SoundPlayer, SoundFactory
+import re as regularExpression
+import random
+import sys
 
-class _Note():
-	"""docstring for Note"""
-	def __init__(self, tempo, sounds):
-		self.tempo = tempo
-		self.sounds = sounds
 
-	def __str__(self):
-		return "Tempo: {}, Sounds: {}".format(self.tempo, str(self.sounds))
+class _Note:
+    """docstring for Note"""
 
-class Song():
-	def __init__(self, channels):
-		self.notes = LinkedList()
-		self.channels = channels
+    def __init__(self, tempo, sounds):
+        self.tempo = tempo
+        self.sounds = sounds
 
-	def add_note(self, tempo, sounds):
-		note = _Note(tempo, sounds)
-		self.notes.push(note)
+    def __str__(self):
+        return "Tempo: {}, Sounds: {}".format(self.tempo, str(self.sounds))
 
-	def play(self):
-		sp = SoundPlayer(self.channels)
-		for note in self.notes:
-			sp.play_sounds(note.sounds, note.tempo)
+
+class Song:
+    def __init__(self, channels):
+        self.notes = LinkedList()
+        self.channels = channels
+
+    def add_note(self, tempo, sounds):
+        note = _Note(tempo, sounds)
+        self.notes.push(note)
+
+    def play(self):
+        sp = SoundPlayer(self.channels)
+        for note in self.notes:
+            sp.play_sounds(note.sounds, note.tempo)
+        sp.close()
+
+
+class Mark:
+    def __init__(self, tempo, notes):
+        self.tempo = tempo
+        self.notes = notes
+        # Get a random number from 0 to max value to use as unique id
+        self.id = random.randint(0, sys.maxsize)
+
+    def push_note(self, enabled):
+        self.notes.append(enabled)
+
+    def pop_note(self, track_number):
+        return self.notes.pop(track_number)
+
+    def toggle_note(self, enabled, track_number):
+        self.notes[track_number] = enabled
+
+    def __eq__(self, other):
+        return self.tempo == other.tempo and self.notes == other.notes and self.id == other.id
+
+
+class SoundCreator():
+    @staticmethod
+    def create_from(string_self):
+        print("creating with", string_self)
+        split_sound = string_self.split("|")
+        if len(split_sound) != 3:
+            raise ValueError("The function {} is invalid".format(string_self))
+        func, frequency, volume = split_sound[0].lower(), float(split_sound[1]), float(split_sound[2])
+        if func == "sin":
+            return SoundFactory.get_sine_sound(frequency, volume)
+        if func == "tria":
+            return SoundFactory.get_triangular_sound(frequency, volume)
+        if func.startswith("sq") and func.isalnum():
+            duty_cycle = regularExpression.search("[0-9]+", func).group(0)
+            return SoundFactory.get_square_sound(frequency, volume, int(duty_cycle) * 0.1)
+        raise ValueError("Function {} is not recognized".format(func))
+
 
 class SongFile():
-	"""docstring for SongFile"""
-	def __init__(self, channels, notes, tracks, tempos):
-		super(SongFile, self).__init__()
-		self.channels = channels
-		self.notes = notes
-		self.tracks = tracks
-		self.tempos = tempos
-		self.position = 0
+    """docstring for SongFile"""
 
-	def show(self):
-		print("Song has", self.channels, "channels")
-		print("The sounds for each channel are: ")
-		for i,sound in enumerate(self.notes):
-			print(i,":", sound)
+    def __init__(self, channels, notes, marks):
+        super(SongFile, self).__init__()
+        self.channels = channels
+        self.notes = notes
+        self.marks = marks
+        self.iterator = iter(marks)
 
-		for tempo in self.tempos:
-			print("{}|".format(tempo), end="")
-		print("")
-		for channel in range(self.channels):
-			for note in self.tracks[channel]:
-				print(" {} |".format(note), end="")
+    def show(self):
+        print("Song has", self.channels, "channels")
+        print("The sounds for each channel are: ")
+        for i, sound in enumerate(self.notes):
+            print(i, ":", sound)
 
-			print("  <-- ", self.notes[channel])
-		
-		for position in range(self.position + 1):
-			if position == self.position:
-				print(" ^ ")
-			else:
-				print("    ", end="")
+        for mark in self.marks:
+            print("{}|".format(mark.tempo), end="")
+        print("")
+        for channel in range(self.channels):
+            for mark in self.marks:
+                char = "#" if mark.notes[channel] else "·"
+                print(" {} |".format(char), end="")
+            print("  <-- ", self.notes[channel])
 
-	def step(self, steps = 1):
-		if self.position < len(self) - 1:
-			self.position += steps
+        for mark in self.marks:
+            if mark == self.iterator.get_current():
+                print(" ^ ")
+                break
+            else:
+                print("    ", end="")
 
-	def back(self, steps = 1):
-		if self.position > 0:
-			self.position -= steps
+    def step(self, steps=1):
+        for i in range(steps):
+            if self.iterator.has_next():
+                self.iterator.next()
 
-	def add_track(self, track):
-		self.notes.append(track)
-		self.channels += 1
-		marks = len(self.tracks[0])
-		track = LinkedList()
-		for i in range(marks):
-			track.push("·")
-		self.tracks.append(track)
+    def back(self, steps=1):
+        for i in range(steps):
+            if self.iterator.has_previous():
+                self.iterator.previous()
 
-	def delete_track(self, track_number):
-		self.notes.pop(track_number)
-		self.channels -= 1
-		self.tracks.pop(track_number)
+    def add_track(self, track):
+        sound = None
+        try:
+            sound = SoundCreator.create_from(track)
+        except ValueError as e:
+            print("The function {} is not valid".format(track))
+            return
 
-	def toggle_track(self, turn_on, track_number):
-		current_value = "#" if turn_on else "·"
-		self.tracks[track_number].replace(current_value, self.position)
+        for mark in self.marks:
+            mark.push_note(False)
+        self.notes.append(sound)
+        self.channels += 1
 
-	def add_mark(self, position, tempo):
-		insert_position = self.position + position
+    def delete_track(self, track_number):
+        for mark in self.marks:
+            mark.pop_note(track_number)
+        self.channels -= 1
+        self.notes.pop(track_number)
 
-		if insert_position < 0:
-			insert_position = 0
+    def toggle_track(self, turn_on, track_number):
+        current_mark = self.iterator.get_current()
+        current_mark.toggle_note(turn_on, track_number)
 
-		if position == -1:
-			self.position += 1
-			insert_position += 1
+    def add_mark(self, position, tempo):
+        new_mark = Mark(tempo, [False for i in range(self.channels)])
+        if position == 0:
+            self.iterator.insert(new_mark)
+        elif position == 1:
+            self.iterator.insert_next(new_mark)
+        elif position == -1:
+            self.iterator.insert_previous(new_mark)
 
-		self.tempos.insert(tempo, insert_position)
-		for channel in range(self.channels):
-			self.tracks[channel].insert("·", insert_position)
-
-	def get_song(self, start = None, end = None):
-		if start is None or start < 0:
-			start = self.position
-		if end is None or end > len(self) - 1:
-			end = len(self) - 1
-
-		song = Song(self.channels)
-		# Get sound str as a proper sound
-		sounds = []
-		for sound in self.notes:
-			sounds.append(SoundFactory.get_sound(sound))
-		
-		# Get the tracks that should be played
-		tracks = []
-		for channel in range(self.channels):
-			tracks.append(self.tracks[channel].get_range(start, end))
-
-		# Get the tempos for the chosen notes
-		tempos = self.tempos.get_range(start, end)
-		# For the len of the sounds to be played
-		for track_postition in range(len(tracks[0])):
-			enabled_sounds = []
-			# For each channel we have
-			for channel in range(self.channels):
-				char = tracks[channel].get(track_postition)
-				if char == "#":
-					enabled_sounds.append(sounds[channel])
-			song.add_note(tempos.get(track_postition), enabled_sounds)
-		return song
-
-	def __len__(self):
-		return len(self.tracks[0])
+    def __len__(self):
+        return len(self.marks)
