@@ -12,10 +12,6 @@ class _Note:
         self.tempo = tempo
         self.sounds = sounds
 
-    def __str__(self):
-        return "Tempo: {}, Sounds: {}".format(self.tempo, str(self.sounds))
-
-
 class Song:
     def __init__(self, channels):
         self.notes = LinkedList()

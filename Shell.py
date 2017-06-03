@@ -19,7 +19,7 @@ class Shell(cmd.Cmd):
         # if not self.validate_params(params):
         #	return;
         # self.executor.load(params)
-        self.executor.load("ejemplo2.plp")
+        self.executor.load("ejemplo.plp")
 
     def do_store(self, params):
         # TODO
@@ -66,12 +66,11 @@ class Shell(cmd.Cmd):
             DESCRIPTION
                     Steps backwards n marks of the song"""
         if not self.validate_params(params, int):
-            return
+            return;
         self.executor.back(int(params))
 
     def do_trackadd(self, params):
         if not self.validate_params(params) or params.count(" ") != 2:
-            print("Remember the correct format is [function frequency volume]")
             return;
         params = params.replace(" ", "|")
         self.executor.add_track(params)
@@ -108,19 +107,19 @@ class Shell(cmd.Cmd):
 
     def do_play(self, params):
         # TODO
-        raise NotImplementedError("Command store is not yet implemented")
+        raise NotImplementedError("Command play is not yet implemented")
 
     def do_playall(self, params):
         # TODO
-        raise NotImplementedError("Command store is not yet implemented")
+        raise NotImplementedError("Command playall is not yet implemented")
 
     def do_playmarks(self, params):
         # TODO
-        raise NotImplementedError("Command store is not yet implemented")
+        raise NotImplementedError("Command playmarks is not yet implemented")
 
     def do_playseconds(self, params):
         # TODO
-        raise NotImplementedError("Command store is not yet implemented")
+        raise NotImplementedError("Command playseconds is not yet implemented")
 
     def validate_params(self, params, expected_type=str):
         if not params:

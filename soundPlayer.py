@@ -16,7 +16,6 @@
 
 import math
 import random
-import re as regularExpression
 from threading import Thread
 
 from pyaudio import *
