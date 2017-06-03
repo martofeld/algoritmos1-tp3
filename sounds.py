@@ -12,6 +12,7 @@ class _Note:
         self.tempo = tempo
         self.sounds = sounds
 
+
 class Song:
     def __init__(self, channels):
         self.notes = LinkedList()
@@ -48,22 +49,21 @@ class Mark:
         return self.tempo == other.tempo and self.notes == other.notes and self.id == other.id
 
 
-class SoundCreator():
+class SoundCreator:
     @staticmethod
     def create_from(string_self):
-        print("creating with", string_self)
         split_sound = string_self.split("|")
         if len(split_sound) != 3:
             raise ValueError("The function {} is invalid".format(string_self))
         func, frequency, volume = split_sound[0].lower(), float(split_sound[1]), float(split_sound[2])
         if func == "sin":
-            return SoundFactory.get_sine_sound(frequency, volume)
+            return SoundWrapper(SoundFactory.get_sine_sound(frequency, volume), volume)
         if func == "tria":
-            return SoundFactory.get_triangular_sound(frequency, volume)
+            return SoundWrapper(SoundFactory.get_triangular_sound(frequency, volume), volume)
         if func.startswith("sq") and func.isalnum():
             duty_cycle = regularExpression.search("[0-9]+", func).group(0)
-            return SoundFactory.get_square_sound(frequency, volume, int(duty_cycle) * 0.1)
-        raise ValueError("Function {} is not recognized".format(func))
+            return SoundWrapper(SoundFactory.get_square_sound(frequency, volume, int(duty_cycle) * 0.1), volume)
+        raise ValueError("Function {} is not recognized".format(func))\
 
 
 class SongFile():
@@ -171,6 +171,7 @@ class SongFile():
     def __len__(self):
         return len(self.marks)
 
+
 class SongPlayer:
     def __init__(self, marks):
         self.marks = marks
@@ -185,6 +186,22 @@ class SongPlayer:
             # For each channel we have
             for channel in range(channels):
                 if mark.notes[channel]:
-                    enabled_sounds.append(functions[channel])
+                    enabled_sounds.append(functions[channel].sound)
             song.add_note(mark.tempo, enabled_sounds)
         song.play()
+
+
+class SoundWrapper:
+    def __init__(self, sound, volume):
+        self.sound = sound
+        self.volume = volume
+
+    def for_file(self):
+        func = self.sound.name
+        frec = self.sound.frequency
+        vol = self.volume
+
+        return "{}|{}|{}".format(func, frec, vol)
+
+    def __str__(self):
+        return "{}, Vol: {}".format(str(self.sound), self.volume)

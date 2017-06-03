@@ -7,18 +7,15 @@ import re as regularExpression
 class FileManager():
     """docstring for FileManager"""
 
-    def __init__(self, file_name):
-        self.file_name = file_name
+    def open_file(self, file_name, mode="r"):
+        return open(file_name, mode)
 
-    def open_file(self, mode="r"):
-        return open(self.file_name, mode)
-
-    def file_to_song(self):
+    def file_to_song(self, file_name):
         channels = 0
         functions = []
         marks = LinkedList()
         current_tempo = 0
-        with self.open_file() as song_file:
+        with self.open_file(file_name) as song_file:
             for line in song_file:
                 key, value = line.strip().split(",")
                 key = key.lower()
@@ -33,6 +30,21 @@ class FileManager():
                     marks.push(Mark(current_tempo, [char == "#" for char in value]))
 
         return SongFile(channels, functions, marks)
+
+    def song_to_file(self, song, file_name):
+        with self.open_file(file_name, "w") as file:
+            file.write("C,{}\n".format(song.channels))
+            for sound in song.notes:
+                file.write("S,{}\n".format(sound.for_file()))
+            current_tempo = None
+            for mark in song.marks:
+                if mark.tempo != current_tempo:
+                    current_tempo = mark.tempo
+                    file.write("T,{}\n".format(current_tempo))
+                file.write("N,")
+                for note in mark.notes:
+                    file.write("#" if note else "·")
+                file.write("\n")
 
 
 class FileReader():

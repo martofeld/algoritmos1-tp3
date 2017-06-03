@@ -6,10 +6,14 @@ class CommandExecutor():
 
     def __init__(self):
         self.song_file = None
+        self.file_manager = FileManager()
 
     def load(self, song_name):
-        file_reader = FileManager(song_name)
-        self.song_file = file_reader.file_to_song()
+        self.song_file = self.file_manager.file_to_song(song_name)
+        self.song_file.show()
+
+    def save(self, song_name):
+        self.file_manager.song_to_file(self.song_file, song_name)
         self.song_file.show()
 
     def step(self, steps=1):

@@ -19,11 +19,12 @@ class Shell(cmd.Cmd):
         # if not self.validate_params(params):
         #	return;
         # self.executor.load(params)
-        self.executor.load("ejemplo.plp")
+        self.executor.load("ejemplo2.plp")
 
     def do_store(self, params):
-        # TODO
-        raise NotImplementedError("Command store is not yet implemented")
+        if not self.validate_params(params):
+            return
+        self.executor.save(params)
 
     def do_step(self, params):
         """ NAME

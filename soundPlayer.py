@@ -31,9 +31,10 @@ SAMPLE_RATE = 22050
 class Sound(object):
     """Class that encapsulates the functions and generates the samples"""
 
-    def __init__(self, frequency, wave_function):
+    def __init__(self, frequency, wave_function, name):
         self.frequency = frequency
         self.function = wave_function
+        self.name = name
 
     def _get_samples(self, duration=1):
         n_samples = int(SAMPLE_RATE * duration)
@@ -73,17 +74,20 @@ class SoundFactory(object):
     @staticmethod
     def get_square_sound(frequency, volume, duty_cycle=0.5):
         return Sound(frequency,
-                     lambda t: volume * SoundFactory.__square_wave(t, SAMPLE_RATE, frequency, duty_cycle))
+                     lambda t: volume * SoundFactory.__square_wave(t, SAMPLE_RATE, frequency, duty_cycle),
+                     "SQ{}".format(duty_cycle))
 
     @staticmethod
     def get_triangular_sound(frequency, volume):
         return Sound(frequency,
-                     lambda t: volume * SoundFactory.__triangular_wave(t, SAMPLE_RATE, frequency))
+                     lambda t: volume * SoundFactory.__triangular_wave(t, SAMPLE_RATE, frequency),
+                     "TRIA")
 
     @staticmethod
     def get_sine_sound(frequency, volume):
         return Sound(frequency,
-                     lambda t: volume * math.sin(2 * math.pi * frequency * t / SAMPLE_RATE))
+                     lambda t: volume * math.sin(2 * math.pi * frequency * t / SAMPLE_RATE),
+                     "SIN")
 
     @staticmethod
     def get_noise_sound(frequency, volume):
