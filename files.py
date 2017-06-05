@@ -1,19 +1,20 @@
-from soundPlayer import SoundFactory
 from sounds import Song, SongFile, SoundCreator, Mark
 from LinkedList import LinkedList
-import re as regularExpression
 
 
 class FileManager():
-    """docstring for FileManager"""
+    """Class that handles the managing of the files"""
 
     def __init__(self, file_name):
+        """Creates a new file manager for the file with the name"""
         self.file_name = file_name
 
     def open_file(self, mode="r"):
+        """Opens the file this instance is managing"""
         return open(self.file_name, mode)
 
     def file_to_song(self):
+        """Parses the given file to a SongFile"""
         channels = 0
         functions = []
         marks = LinkedList()
@@ -33,81 +34,3 @@ class FileManager():
                     marks.push(Mark(current_tempo, [char == "#" for char in value]))
 
         return SongFile(channels, functions, marks)
-
-
-class FileReader():
-    def __init__(self, file_name):
-        self.file_manager = FileManager(file_name)
-
-    def to_song(self):
-        try:
-            with self.file_manager.open_file() as file:
-                return self.file_to_song(file)
-        except FileNotFoundError:
-            raise FileNotFoundError("The file could not be found, please check the file name")
-
-    def file_to_song(self, file):
-        song = Song()
-        channels = 0
-        sounds = []
-        current_tempo = None
-        for line in file:
-            key, value = line.split(",")
-            key = key.lower()
-
-            if key == "c":
-                channels = int(value)
-            elif key == "s":
-                sounds.append(self._get_sound(value, sounds))
-            elif key == "t":
-                current_tempo = float(value)
-            elif key == "n":
-                enabled_sounds = []
-                for i, char in enumerate(value):
-                    if char == "#":
-                        enabled_sounds.append(sounds[i])
-                song.add_note(current_tempo, enabled_sounds)
-
-        return song
-
-    def _get_sound(self, sound, sounds):
-        split_sound = sound.split("|")
-        function, frequency, volume = split_sound[0].lower(), float(split_sound[1]), float(split_sound[2])
-        if function == "sin":
-            return SoundFactory.get_sine_sound(frequency, volume)
-        if function == "tria":
-            return SoundFactory.get_triangular_sound(frequency, volume)
-        if function.startswith("sq") and function.isalnum():
-            duty_cycle = regularExpression.search("[0-9]+", function).group(0)
-            return SoundFactory.get_square_sound(frequency, volume, int(duty_cycle) * 0.1)
-        raise ValueError("Function {} is not recognized".format(function))
-
-
-class FileLoader():
-    def __init__(self, file_name):
-        self.file_manager = FileManager(file_name)
-
-    def print_file(self):
-        channels = 0
-        sounds = []
-        tracks = []
-        tempos = []
-        current_tempo = 0
-        for line in self.file_manager.open_file():
-            key, value = line.split(",")
-            key = key.lower()
-            value = value.strip()
-
-            if key == "c":
-                channels = int(value)
-                for channel in range(channels):
-                    tracks.append([])
-            elif key == "s":
-                sounds.append(value)
-            elif key == "t":
-                current_tempo = value
-            elif key == "n":
-                tempos.append(current_tempo)
-                for i, char in enumerate(value):
-                    tracks[i].append(char)
-        return SongFile(channels, sounds, tracks, tempos)
