@@ -16,10 +16,10 @@ class Shell(cmd.Cmd):
 
             DESCRIPTION
                     If existant, loads the given file so it can be both edited or played"""
-        # if not self.validate_params(params):
-        #	return
-        # self.executor.load(params)
-        self.executor.load("ejemplo.plp")
+        if not self.validate_params(params):
+            print("Error: Incorrect number of params, check help for this command to see required params")
+            return
+        print(self.executor.load(params))
 
     def do_store(self, params):
         """ NAME
@@ -40,7 +40,7 @@ class Shell(cmd.Cmd):
 
             DESCRIPTION
                     Steps to the next mark of the song"""
-        self.executor.step()
+        print(self.executor.step())
 
     def do_back(self, params):
         """ NAME
@@ -50,7 +50,7 @@ class Shell(cmd.Cmd):
 
             DESCRIPTION
                     Steps to the previous mark of the song"""
-        self.executor.back()
+        print(self.executor.back())
 
     def do_stepm(self, params):
         """ NAME
@@ -61,8 +61,9 @@ class Shell(cmd.Cmd):
             DESCRIPTION
                     Steps forward n marks of the song"""
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.step(int(params))
+        print(self.executor.step(int(params)))
 
     def do_backm(self, params):
         """ NAME
@@ -73,8 +74,9 @@ class Shell(cmd.Cmd):
             DESCRIPTION
                     Steps backwards n marks of the song"""
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.back(int(params))
+        print(self.executor.back(int(params)))
 
     def do_trackadd(self, params):
         """ NAME
@@ -90,9 +92,10 @@ class Shell(cmd.Cmd):
                     volume is expected to be a number from 0 to 1
             """
         if not self.validate_params(params) or params.count(" ") != 2:
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
         params = params.replace(" ", "|")
-        self.executor.add_track(params)
+        print(self.executor.add_track(params))
 
     def do_trackdel(self, params):
         """ NAME
@@ -106,8 +109,9 @@ class Shell(cmd.Cmd):
                     If there is no track in the given position the song will remain unmodified
             """
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.delete_track(int(params))
+        print(self.executor.delete_track(int(params)))
 
     def do_markadd(self, params):
         """ NAME
@@ -119,8 +123,9 @@ class Shell(cmd.Cmd):
                     Adds a new mark in the current position with the given tempo, by default all tracks are off.
             """
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.add_mark(int(params))
+        print(self.executor.add_mark(int(params)))
 
     def do_markaddnext(self, params):
         """ NAME
@@ -132,8 +137,9 @@ class Shell(cmd.Cmd):
                     Adds a new mark in the next position with the given tempo, by default all tracks are off.
             """
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.add_mark(int(params), 1)
+        print(self.executor.add_mark(int(params), 1))
 
     def do_markaddprev(self, params):
         """ NAME
@@ -145,8 +151,9 @@ class Shell(cmd.Cmd):
                     Adds a new mark in the previous position with the given tempo, by default all tracks are off.
             """
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.add_mark(int(params), -1)
+        print(self.executor.add_mark(int(params), -1))
 
     def do_trackon(self, params):
         """ NAME
@@ -160,8 +167,9 @@ class Shell(cmd.Cmd):
                     If the position doesn't exist the song will remain unchanged
             """
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.toggle_track(True, int(params))
+        print(self.executor.toggle_track(True, int(params)))
 
     def do_trackoff(self, params):
         """ NAME
@@ -175,8 +183,9 @@ class Shell(cmd.Cmd):
                     If the position doesn't exist the song will remain unchanged
             """
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.toggle_track(False, int(params))
+        print(self.executor.toggle_track(False, int(params)))
 
     def do_play(self, params):
         """ NAME
@@ -186,7 +195,7 @@ class Shell(cmd.Cmd):
 
                     DESCRIPTION
                             Plays the current mark"""
-        self.executor.play_marks(end=1)
+        print(self.executor.play_marks(end=1))
 
     def do_playall(self, params):
         """ NAME
@@ -196,7 +205,7 @@ class Shell(cmd.Cmd):
 
             DESCRIPTION
                     Plays the whole song"""
-        self.executor.play_marks(start=0)
+        print(self.executor.play_marks(start=0))
 
     def do_playmarks(self, params):
         """ NAME
@@ -209,8 +218,9 @@ class Shell(cmd.Cmd):
             NOTE
                     If the requested marks are more than the remaining the song will be played till the end"""
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.play_marks(end=int(params))
+        print(self.executor.play_marks(end=int(params)))
 
     def do_playseconds(self, params):
         """ NAME
@@ -223,17 +233,19 @@ class Shell(cmd.Cmd):
             NOTE
                     If the requested seconds are more than the remaining the song will be played till the end"""
         if not self.validate_params(params, int):
+            print("Error: Incorrect number of params, check help for this command to see required params")
             return
-        self.executor.play_seconds(int(params))
+        print(self.executor.play_seconds(int(params)))
 
     def validate_params(self, params, expected_type=str):
         """Validates that the params are not empty and are of the expected type"""
         if not params:
-            print("Params cant be empty")
             return False
         try:
             expected_type(params)
-        except TypeError:
-            print("Expected param of type", expected_type)
+        except ValueError:
+            str_type = str(expected_type)
+            str_type = str_type[str_type.find("'") + 1:str_type.rfind("'")]
+            print("Expected param of type", str_type)
             return False
         return True

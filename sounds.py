@@ -37,6 +37,9 @@ class Mark:
     """A class that holds the tempo and the enabled status of each track"""
 
     def __init__(self, tempo, notes):
+        """Creates a new Mark
+        :param tempo: The tempo of this mark
+        :param notes: The list of enabled/disabled tracks for this mark"""
         self.tempo = tempo
         self.notes = notes
         # Get a random number from 0 to max value to use as unique id
@@ -65,7 +68,11 @@ class SoundCreator():
         split_sound = string_self.split("|")
         if len(split_sound) != 3:
             raise ValueError("The function {} is invalid".format(string_self))
-        func, frequency, volume = split_sound[0].lower(), float(split_sound[1]), float(split_sound[2])
+        func, frequency, volume = "", 0, 0
+        try:
+            func, frequency, volume = split_sound[0].lower(), float(split_sound[1]), float(split_sound[2])
+        except:
+            raise ValueError("The function {} is invalid".format(string_self))
         if func == "sin":
             return SoundFactory.get_sine_sound(frequency, volume)
         if func == "tria":
@@ -80,6 +87,10 @@ class SongFile():
     """A representation of the song to work with"""
 
     def __init__(self, channels, notes, marks):
+        """Create a new song file
+        :param channels: The amount of channels the song has
+        :param notes: A list of {Sound}s
+        :param marks: A list of {Mark}s """
         self.channels = channels
         self.notes = notes
         self.marks = marks
@@ -126,12 +137,7 @@ class SongFile():
 
     def add_track(self, track):
         """Adds a new track to the song. Disables all marks for the new track"""
-        sound = None
-        try:
-            sound = SoundCreator.create_from(track)
-        except ValueError as e:
-            print("The function {} is not valid".format(track))
-            return
+        sound = SoundCreator.create_from(track)
 
         for mark in self.marks:
             mark.push_note(False)
@@ -139,14 +145,22 @@ class SongFile():
         self.channels += 1
 
     def delete_track(self, track_number):
-        """Deletes the track in the given position. Removes all marks for the track"""
+        """Deletes the track in the given position. Removes all marks for the track
+        :param track_number: The position of the track to delete"""
+        if track_number > self.channels - 1:
+            raise IndexError
+
         for mark in self.marks:
             mark.pop_note(track_number)
         self.channels -= 1
         self.notes.pop(track_number)
 
     def toggle_track(self, turn_on, track_number):
-        """Changes the status of the track in the given position on the current mark"""
+        """Changes the status of the track in the given position on the current mark
+        :param turn_on: The status of the track
+        :param track_number: The track position to toggle"""
+        if track_number > self.channels - 1:
+            return IndexError
         current_mark = self.iterator.get_current()
         current_mark.toggle_note(turn_on, track_number)
 
@@ -165,12 +179,16 @@ class SongFile():
             self.iterator.insert_previous(new_mark)
 
     def play_song(self, start=None, end=None):
+        """Play the loaded song between the start and end position
+        :param start: The start position to play, if none specified the current position is used
+        :param end: The end position to play, if none specified the last position is used"""
         if start == None:
             start = self._get_current_position()
         play_marks = self.marks.get_range(start, end)
         SongPlayer(play_marks).play(self.notes)
 
     def _get_current_position(self):
+        """Obtains the current mark we are standing by its index"""
         position = 0
         iterator = iter(self.marks)
         current = self.iterator.get_current()
@@ -180,6 +198,7 @@ class SongFile():
         return position
 
     def play_song_with_length(self, seconds):
+        """Plays {seconds} seconds of the loaded song"""
         seconds_sum = 0
         end_position = self._get_current_position()
         tempos_iterator = iter(self.marks)
@@ -197,10 +216,16 @@ class SongFile():
 
 
 class SongPlayer:
+    """Class in charge of creating a song and playing it"""
+
     def __init__(self, marks):
+        """ Create a new SongPlayer
+        :param marks: iterable of marks that should be played"""
         self.marks = marks
 
     def play(self, functions):
+        """Play a song with the given functions
+        :param functions: a list of {Sound}s"""
         channels = len(functions)
         song = Song(channels)
 
