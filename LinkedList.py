@@ -2,60 +2,28 @@ from Stack import Stack
 
 
 class LinkedList:
-    """docstring for LinkedList"""
+    """class for the LinkedList ADT"""
 
     def __init__(self):
+        """Creates a new instance of the LinkedList"""
         self.first = None
         self.last = None
         self.len = 0
 
     def push(self, value):
+        """Adds a value to the end of the list"""
         new = _Node(value)
         self.len += 1
 
         if not self.first or not self.last:
             self.first = self.last = new
-            return;
+            return
 
         self.last.next = new
         self.last = new
 
-    def insert(self, value, index=None):
-        if index is None or index == self.len:
-            push(value)
-
-        if index < 0 or index > self.len:
-            raise IndexError
-
-        new = _Node(value)
-        self.len += 1
-        if index == 0:
-            new.next = self.first
-            self.first = new
-            return
-
-        previous = self.first
-        for i in range(1, index):
-            previous = previous.next
-
-        new.next = previous.next
-        previous.next = new
-
-    def replace(self, new_value, index):
-        if index < 0 or index > self.len:
-            raise IndexError
-
-        if index == 0:
-            self.first.value = new_value
-            return
-
-        previous = self.first
-        for i in range(1, index + 1):
-            previous = previous.next
-
-        previous.value = new_value
-
     def pop(self, index=None):
+        """Removes and returns the last value of the given index, by default the last value"""
         if index is None:
             index = self.len - 1
 
@@ -77,20 +45,8 @@ class LinkedList:
         previous.next = current.next
         return current.value
 
-    def get(self, index=None):
-        if index is None:
-            index = self.len - 1
-
-        if index < 0 or index > self.len:
-            raise IndexError("Invalid index for list")
-
-        current = self.first
-        for i in range(index):
-            current = current.next
-
-        return current.value
-
     def get_range(self, start=None, end=None):
+        """Return a new list that is composed by the values of this one between start and end"""
         if start is None or start < 0:
             start = 0
         if end is None or end > self.len - 1:
@@ -122,13 +78,15 @@ class LinkedList:
 
 
 class _LinkedListIterator:
-    """docstring for _LinkedListIterator"""
+    """Iterator for the LinkedList"""
 
     def __init__(self, start_value):
+        """Creates a new iterator"""
         self.current = start_value
         self.previous_stack = Stack()
 
     def next(self):
+        """Moves the iterator to the next position and returns the value of the current one"""
         if not self.current:
             raise StopIteration
 
@@ -142,32 +100,40 @@ class _LinkedListIterator:
         return self.next()
 
     def previous(self):
+        """Moves the iterator to the previous position and returns the value of the current one"""
         if self.previous_stack.is_empty():
             raise StopIteration
 
+        return_value = self.current.value
         self.current = self.previous_stack.pop()
-        return self.current.value
+        return return_value
 
     def has_next(self):
+        """Checks if the iterator has a next value"""
         return self.current.next != None
 
     def has_previous(self):
+        """Checks if the iterator has a previous value"""
         return not self.previous_stack.is_empty()
 
     def get_current(self):
+        """Return the current value of the iterator"""
         return self.current.value
 
     def insert(self, value):
+        """Insert a value in the current position"""
         self.insert_previous(value)
         self.previous()
 
     def insert_next(self, value):
+        """Insert a value in the next position"""
         next_node = self.current.next
         new_node = _Node(value)
         self.current.next = new_node
         new_node.next = next_node
 
     def insert_previous(self, value):
+        """Insert a value in the previous position"""
         new_node = _Node(value)
         self.previous_stack.peek().next = new_node
         new_node.next = self.current
@@ -175,7 +141,7 @@ class _LinkedListIterator:
 
 
 class _Node:
-    """docstring for _Node"""
+    """a simple Node class for the LinkedList"""
 
     def __init__(self, value):
         self.value = value
