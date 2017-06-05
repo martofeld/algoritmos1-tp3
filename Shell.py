@@ -17,7 +17,7 @@ class Shell(cmd.Cmd):
             DESCRIPTION
                     If existant, loads the given file so it can be both edited or played"""
         # if not self.validate_params(params):
-        #	return;
+        #	return
         # self.executor.load(params)
         self.executor.load("ejemplo.plp")
 
@@ -61,7 +61,7 @@ class Shell(cmd.Cmd):
             DESCRIPTION
                     Steps forward n marks of the song"""
         if not self.validate_params(params, int):
-            return;
+            return
         self.executor.step(int(params))
 
     def do_backm(self, params):
@@ -73,7 +73,7 @@ class Shell(cmd.Cmd):
             DESCRIPTION
                     Steps backwards n marks of the song"""
         if not self.validate_params(params, int):
-            return;
+            return
         self.executor.back(int(params))
 
     def do_trackadd(self, params):
@@ -180,15 +180,13 @@ class Shell(cmd.Cmd):
 
     def do_play(self, params):
         """ NAME
-                   play
-            SYNOPSIS
-                   play
+                           play
+                    SYNOPSIS
+                           play
 
-            DESCRIPTION
-                    Plays the current mark
-            """
-        # TODO
-        raise NotImplementedError("Command play is not yet implemented")
+                    DESCRIPTION
+                            Plays the current mark"""
+        self.executor.play_marks(end=1)
 
     def do_playall(self, params):
         """ NAME
@@ -198,8 +196,7 @@ class Shell(cmd.Cmd):
 
             DESCRIPTION
                     Plays the whole song"""
-        # TODO
-        raise NotImplementedError("Command playall is not yet implemented")
+        self.executor.play_marks(start=0)
 
     def do_playmarks(self, params):
         """ NAME
@@ -211,8 +208,9 @@ class Shell(cmd.Cmd):
                     Plays n marks of the song from the current position
             NOTE
                     If the requested marks are more than the remaining the song will be played till the end"""
-        # TODO
-        raise NotImplementedError("Command playmarks is not yet implemented")
+        if not self.validate_params(params, int):
+            return
+        self.executor.play_marks(end=int(params))
 
     def do_playseconds(self, params):
         """ NAME
@@ -224,8 +222,9 @@ class Shell(cmd.Cmd):
                     Plays n seconds of the song from the current position
             NOTE
                     If the requested seconds are more than the remaining the song will be played till the end"""
-        # TODO
-        raise NotImplementedError("Command playseconds is not yet implemented")
+        if not self.validate_params(params, int):
+            return
+        self.executor.play_seconds(int(params))
 
     def validate_params(self, params, expected_type=str):
         """Validates that the params are not empty and are of the expected type"""
@@ -234,7 +233,7 @@ class Shell(cmd.Cmd):
             return False
         try:
             expected_type(params)
-        except:
+        except TypeError:
             print("Expected param of type", expected_type)
             return False
         return True

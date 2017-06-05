@@ -164,5 +164,52 @@ class SongFile():
         elif position == -1:
             self.iterator.insert_previous(new_mark)
 
+    def play_song(self, start=None, end=None):
+        if start == None:
+            start = self._get_current_position()
+        play_marks = self.marks.get_range(start, end)
+        SongPlayer(play_marks).play(self.notes)
+
+    def _get_current_position(self):
+        position = 0
+        iterator = iter(self.marks)
+        current = self.iterator.get_current()
+        while iterator.get_current() != current:
+            position += 1
+            iterator.next()
+        return position
+
+    def play_song_with_length(self, seconds):
+        seconds_sum = 0
+        end_position = self._get_current_position()
+        tempos_iterator = iter(self.marks)
+        for i in range(end_position):
+            tempos_iterator.next()
+        mark = tempos_iterator.next()
+        while tempos_iterator.has_next() and seconds_sum < seconds:
+            seconds_sum += mark.tempo
+            mark = tempos_iterator.next()
+            end_position += 1
+        self.play_song(end=end_position)
+
     def __len__(self):
         return len(self.marks)
+
+
+class SongPlayer:
+    def __init__(self, marks):
+        self.marks = marks
+
+    def play(self, functions):
+        channels = len(functions)
+        song = Song(channels)
+
+        # For the len of the sounds to be played
+        for mark in self.marks:
+            enabled_sounds = []
+            # For each channel we have
+            for channel in range(channels):
+                if mark.notes[channel]:
+                    enabled_sounds.append(functions[channel])
+            song.add_note(mark.tempo, enabled_sounds)
+        song.play()
