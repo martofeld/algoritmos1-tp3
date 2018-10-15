@@ -25,3 +25,6 @@ class Stack():
             return None
 
         return self.container[-1]
+
+    def __str__(self):
+        return str(self.container)

@@ -64,7 +64,7 @@ class LinkedList:
         return selected_range
 
     def __iter__(self):
-        return _LinkedListIterator(self.first)
+        return LinkedListIterator(self.first, self)
 
     def __len__(self):
         return self.len
@@ -77,12 +77,13 @@ class LinkedList:
         return str(str_list)
 
 
-class _LinkedListIterator:
+class LinkedListIterator:
     """Iterator for the LinkedList"""
 
-    def __init__(self, start_value):
+    def __init__(self, start_value, linked_list):
         """Creates a new iterator"""
         self.current = start_value
+        self.list = linked_list
         self.previous_stack = Stack()
 
     def next(self):
@@ -104,13 +105,15 @@ class _LinkedListIterator:
         if self.previous_stack.is_empty():
             raise StopIteration
 
-        return_value = self.current.value
+        return_value = None
+        if self.current:
+            return_value = self.current.value
         self.current = self.previous_stack.pop()
         return return_value
 
     def has_next(self):
         """Checks if the iterator has a next value"""
-        return self.current.next != None
+        return self.current and self.current.next
 
     def has_previous(self):
         """Checks if the iterator has a previous value"""
@@ -118,24 +121,33 @@ class _LinkedListIterator:
 
     def get_current(self):
         """Return the current value of the iterator"""
+        if not self.current:
+            return None
         return self.current.value
 
     def insert(self, value):
         """Insert a value in the current position"""
         self.insert_previous(value)
-        self.previous()
+        if self.has_previous():
+            self.previous()
 
     def insert_next(self, value):
         """Insert a value in the next position"""
-        next_node = self.current.next
         new_node = _Node(value)
+        if not self.current:
+            self.current = new_node
+            return
+        next_node = self.current.next
         self.current.next = new_node
         new_node.next = next_node
 
     def insert_previous(self, value):
         """Insert a value in the previous position"""
         new_node = _Node(value)
-        self.previous_stack.peek().next = new_node
+        if self.previous_stack.is_empty():
+            self.list.first = new_node
+        else:
+            self.previous_stack.peek().next = new_node
         new_node.next = self.current
         self.previous_stack.push(new_node)
 
